@@ -2,6 +2,8 @@ function sketch_header_background(p) {
 
   // p5 setup here
   p.setup = function () {
+    p.frameRate(15);
+
     p.createCanvas(p.windowWidth, 250);
     p.colorMode(p.RGB, 255, 255, 255, 1);
     //p.background(255, 255, 255, 0);
@@ -66,7 +68,7 @@ function sketch_header_background(p) {
       for(let i = 0; i < this.dotsCount; i++){
         this.dots.push(new Dot(p.random(0, p.width), p.random(0, p.height)));
       }
-      this.connects = [];
+      this.connects = new Set();
     }
 
     add_dot(x, y){
@@ -98,12 +100,10 @@ function sketch_header_background(p) {
         this.qt.query(dcircle, neighbors);
         for (const neighbor of neighbors){
           if (neighbor != dot.pos){
-            this.connects.push([dot.pos, neighbor]);
+            this.connects.add([dot.pos, neighbor]);
           }
         }
       }
-      this.connects = uniq_fast(this.connects);
-
     }
 
     draw(){
@@ -116,13 +116,14 @@ function sketch_header_background(p) {
       //this.qt.draw();
 
       // the connects
+      p.stroke(255, 255, 255, 1);
       for (const pair of this.connects){
         let d = p.map(distance(pair[0].x, pair[0].y, pair[1].x, pair[1].y), 0, 100, 0.8, 0);
-        p.stroke(255, 255, 255, d);
-        p.strokeWeight(d);
+        //p.stroke(255, 255, 255, d);
+        p.strokeWeight(d * d);
         p.line(pair[0].x, pair[0].y, pair[1].x, pair[1].y);
       }
-      this.connects = [];
+      this.connects.clear();
 
     }
 
@@ -134,7 +135,7 @@ function sketch_header_background(p) {
     constructor(x, y){
       this.pos = p.createVector(x, y);
       this.angle = p.random(0, p.TAU);
-      this.speed = p.random(0.1, 0.3);
+      this.speed = p.random(0.2, 0.6);
       this.vel = p.createVector(this.speed * Math.cos(this.angle), this.speed * Math.sin(this.angle));
       this.r = p.random(2, 4);
     }
